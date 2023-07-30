@@ -5,6 +5,10 @@
 
 #include "RAJA/RAJA.hpp"
 
+#if defined(RAJA_ENABLE_CUDA)
+const int CUDA_BLOCK_SIZE = 256;
+#endif
+
 int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 {
 	std::cout << "Approximate pi using a Riemann sum..." << std::endl;
