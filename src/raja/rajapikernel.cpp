@@ -15,6 +15,7 @@ const int CUDA_BLOCK_SIZE = 256;
 int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 {
 	std::cout << "Approximate pi using a Riemann sum..." << std::endl;
+	std::cout << std::endl;
 
 	//N: number of subintervals (2^30 by default)
 	const int N = 32768 * 32768;
@@ -26,7 +27,7 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 
 	std::cout << "Running RAJA sequential pi approximation..." << std::endl;
 
-	using EXEC_POL1 = RAJA:seq_exec;
+	using EXEC_POL1 = RAJA::seq_exec;
 	using REDUCE_POL1 = RAJA::seq_reduce;
 
 	RAJA::ReduceSum <REDUCE_POL1, double> seq_pi(0.0);
@@ -47,9 +48,10 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 
 	seq_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(seq_t2 - seq_t1).count();
 
-	std::cout << "pi = " << std::setprecision(prec) << seq_pi_val << std::endl;
+	std::cout << "\tpi = " << std::setprecision(prec) << seq_pi_val << std::endl;
 
-	std::cout << "Time elapsep to get the result: " << seq_totalTime << " seconds" << std::endl;
+	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
+	std::cout << std::endl;
 
 	//RAJA OpenMP implementation
 	#if defined(RAJA_ENABLE_OPENMP)
@@ -77,9 +79,10 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 
 		omp_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(omp_t2 - omp_t1).count();
 
-		std::cout << "pi = " << std::setprecision(prec) << omp_pi_val << std::endl;
+		std::cout << "\tpi = " << std::setprecision(prec) << omp_pi_val << std::endl;
 
-		std::cout << "Time elapsep to get the result: " << omp_totalTime << " seconds" << std::endl;
+		std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
+		std::cout << std::endl;
 
 	#endif
 
@@ -108,9 +111,10 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 
 		cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
-		std::cout << "pi = " << std::setprecision(prec) << cuda_pi_val << std::endl;
+		std::cout << "\tpi = " << std::setprecision(prec) << cuda_pi_val << std::endl;
 
-        std::cout << "Time elapsep to get the result: " << cu_totalTime << " seconds" << std::endl;
+        std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
+		std::cout << std::endl;
 
 	#endif
 
