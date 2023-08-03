@@ -109,7 +109,7 @@ int main (int argc, char* argv[])
 
     auto cu_t2 = std::chrono::high_resolution_clock::now();
 
-    totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
+    cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
 	std::cout << "\tpi = " << std::setprecision(prec) << cu_pi_r << std::endl;
 
