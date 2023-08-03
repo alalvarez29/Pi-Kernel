@@ -34,28 +34,63 @@ int main (int argc, char* argv[])
     using ExecSpace = MemSpace::execution_space;
     using range_policy = Kokkos::RangePolicy<ExecSpace>;
 
-    double pi = 0.0;
+#if defined(KOKKOS_ENABLE_OPENMP)
 
-    double totalTime;
+	std::cout << "Running Kokkos OpenMP pi approximation..." << std::endl;
+	
+    double omp_pi = 0.0;
 
-    auto t1 = std::chrono::high_resolution_clock::now();
+    double omp_totalTime;
 
-    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& pi_val)
+    auto omp_t1 = std::chrono::high_resolution_clock::now();
+
+    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& omp_pi_val)
     {
         double x = (double(i) + 0.5) * dx;
-		pi_val += dx / (1.0 + x * x);
-    }, pi);
+		omp_pi_val += dx / (1.0 + x * x);
+    }, omp_pi);
   
-    double pi_r = pi * 4.0;
+    double omp_pi_r = omp_pi * 4.0;
 
-    auto t2 = std::chrono::high_resolution_clock::now();
+    auto omp_t2 = std::chrono::high_resolution_clock::now();
 
-    totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
+    omp_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(omp_t2 - omp_t1).count();
 
-	std::cout << "\tpi = " << std::setprecision(prec) << pi_r << std::endl;
+	std::cout << "\tpi = " << std::setprecision(prec) << omp_pi_r << std::endl;
 
-	std::cout << "Time elapsed to get the result: " << totalTime << " seconds" << std::endl;
+	std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
+
+	#endif
+
+#if defined(KOKKOS_ENABLE_CUDA)
+
+    std::cout << "Running Kokkos CUDA pi approximation..." << std::endl;
+
+    double cuda_pi = 0.0;
+
+    double cu_totalTime;
+
+    auto cu_t1 = std::chrono::high_resolution_clock::now();
+
+    Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& cu_pi_val)
+    {
+        double x = (double(i) + 0.5) * dx;
+		cu_pi_val += dx / (1.0 + x * x);
+    }, cuda_pi);
+  
+    double cu_pi_r = cuda_pi * 4.0;
+
+    auto cu_t2 = std::chrono::high_resolution_clock::now();
+
+    totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
+
+	std::cout << "\tpi = " << std::setprecision(prec) << cu_pi_r << std::endl;
+
+	std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
+	std::cout << std::endl;
+
+#endif
 
     }
     Kokkos::finalize();
