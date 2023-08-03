@@ -34,6 +34,32 @@ int main (int argc, char* argv[])
     using ExecSpace = MemSpace::execution_space;
     using range_policy = Kokkos::RangePolicy<ExecSpace>;
 
+    std::cout << "Running sequential pi approximation..." << std::endl;
+ 
+    double seq_pi = 0.0;
+
+    double seq_totalTime;
+
+    auto seq_t1 = std::chrono::high_resolution_clock::now();
+
+    for (int i = 0; i < N; ++i) 
+    {
+        double x = (double(i) + 0.5) * dx;
+        seq_pi += dx / (1.0 + x * x);
+    }
+
+    seq_pi *= 4.0;
+
+    auto seq_t2 = std::chrono::high_resolution_clock::now();
+
+    seq_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(seq_t2 - seq_t1).count();
+
+	std::cout << "\tpi = " << std::setprecision(prec) << seq_pi << std::endl;
+
+	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
+	std::cout << std::endl;
+
+
 #if defined(KOKKOS_ENABLE_OPENMP)
 
 	std::cout << "Running Kokkos OpenMP pi approximation..." << std::endl;
