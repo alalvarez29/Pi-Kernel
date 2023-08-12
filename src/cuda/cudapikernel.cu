@@ -54,3 +54,30 @@ __global__ void integration(int *n, float *g_sum)
 
     g_sum[idx] = s_sum[tx];
 }
+
+__global__ static void sumReduce(int *n, double *g_sum)
+{
+    int tx = threadIdx.x;
+    __shared__ double s_sum[THREADS];
+
+    if (tx < BLOCKS)
+    {
+        s_sum[tx] = g_sum[tx * THREADS];
+    }
+    else
+    {
+        s_sum[tx] = 0.0;
+    }
+
+    for (int i = blockDim.x / 2; i > 0; i >>= 1)
+    {
+        if (tx < i)
+        {
+            s_sum[tx] += s_sum[tx + i];
+        }
+
+        __syncthreads();
+    }
+
+    g_sum[tx] = s_sum[tx];
+}
