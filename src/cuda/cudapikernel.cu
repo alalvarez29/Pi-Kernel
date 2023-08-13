@@ -84,3 +84,31 @@ __global__ void sumReduce(float *sum, float *sumArray, int arraySize)
     }
 }
 
+int main()
+{
+    int deviceCount = 0;
+
+    printf("\nConfiguring device...\n");
+
+    cudaError_t error = cudaGetDeviceCount(&deviceCount);
+
+    if(error != cudaSuccess)
+    {
+        printf("cudaGetDeviceCount returned %d\n-> %s\n", (int)error, cudaGetErrorString(error));
+        return 1;
+    }
+
+    if(deviceCount == 0)
+    {
+        printf("There are no available CUDA device(s)\n");
+        return 1;
+    }
+    else
+    {
+        printf("%d CUDA Capable device(s) detected\n", deviceCount);
+    }
+
+    float pi = 0.0;
+    float *deviceBlockSum;
+    float *devicePi;
+}
