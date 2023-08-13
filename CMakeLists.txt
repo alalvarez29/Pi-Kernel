@@ -121,9 +121,15 @@ message(STATUS "Executable  : ${EXE_NAME}")
 # below we have all the usual CMake target setup steps
 
 include_directories(src)
+if (MODEL STREQUAL "cuda")
+    add_executable(${EXE_NAME} ${IMPL_SOURCES} src/${MODEL}/${MODEL}pikernel.cu)
+    target_link_libraries(${EXE_NAME} PUBLIC ${LINK_LIBRARIES})
+    target_compile_definitions(${EXE_NAME} PUBLIC ${IMPL_DEFINITIONS})
+else()
 add_executable(${EXE_NAME} ${IMPL_SOURCES} src/${MODEL}/${MODEL}pikernel.cpp)
 target_link_libraries(${EXE_NAME} PUBLIC ${LINK_LIBRARIES})
 target_compile_definitions(${EXE_NAME} PUBLIC ${IMPL_DEFINITIONS})
+endif()
 
 if (CXX_EXTRA_LIBRARIES)
     target_link_libraries(${EXE_NAME} PUBLIC ${CXX_EXTRA_LIBRARIES})
