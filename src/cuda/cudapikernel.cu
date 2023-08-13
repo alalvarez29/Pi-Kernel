@@ -63,3 +63,24 @@ __global__ void integrate(float *globalSum, int stepNum, float, stepLength, int 
         globalSum[blockId] = blockSum[0];
     }
 }
+
+__global__ void sumReduce(float *sum, float *sumArray, int arraySize)
+{
+    int localThreadId = threadIdx.x;
+
+    for(int i = blockDim.x / 2; i > 0; i >>= 1)
+    {
+        if (localThreadId < i)
+        {
+            sumArray[localThreadId] += sumArray[localThreadId + i];
+        }
+
+        __syncthreads();
+    }
+
+    if(localThreadId == 0)
+    {
+        *sum = sumArray[0];
+    }
+}
+
