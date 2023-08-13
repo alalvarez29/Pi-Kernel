@@ -111,4 +111,15 @@ int main()
     float pi = 0.0;
     float *deviceBlockSum;
     float *devicePi;
+
+    cudaMalloc((void **) &devicePi, sizeof(float));
+    cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
+
+    cudaEvent_t startTime, stopTime;
+    cudaEventCreate(&startTime);
+    cudaEventCreate(&stopTime);
+    cudaEventRecord(startTime, 0);
+    printf("Approximate pi using a Riemann sum...\n");
+    integrate<<<BLOCK_NUM, THREAD_NUM>>>(deviceBlockSum, STEP_NUM, STEP_LENGTH, THREAD_NUM, BLOCK_NUM);
+    sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
 }
