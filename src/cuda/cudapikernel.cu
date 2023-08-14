@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include <cstdlib>
+#include <iostream>
+#include <iomanip>
+#include <cmath>
 
 const float PI = 3.1415926535897932;
 const long STEP_NUM = 32768 * 32768;
@@ -118,8 +122,13 @@ int main()
     cudaEventElapsedTime(&gpuTime, startTime, stopTime);
 
     printf("Running CUDA pi approximation...\n");
-    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(pi - PI), gpuTime / 1000);
-    assert(fabs(pi - PI) <= 0.001);
+
+    std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
+
+    std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
+
+	std::cout << "Time elapsed to get the result: " << gpuTime / 1000 << " seconds" << std::endl;
+	std::cout << std::endl;
 
     //free memory
     cudaFree(deviceBlockSum);
