@@ -13,14 +13,6 @@ int main (int argc, char* argv[])
 {
     printf("Approximate pi using a Riemann sum...\n");
 
-	//N: number of subintervals (2^30 by default)
-	const int N = 32768 * 32768;
-	//dx: size of each subinterval
-	const double dx = 1.0 / double(N);
-
-	//Set the precision for printing pi
-	int prec = 16;
-
     Kokkos::initialize (argc, argv);
     {
     #ifdef KOKKOS_ENABLE_CUDA
@@ -57,7 +49,7 @@ int main (int argc, char* argv[])
 
     seq_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(seq_t2 - seq_t1).count();
 
-    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(seq_pi - PI), seq_totalTime);
+    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", seq_pi, fabs(seq_pi - PI), seq_totalTime);
     assert(fabs(pi - PI) <= 0.001);
 
 #if defined(KOKKOS_ENABLE_OPENMP)
@@ -82,7 +74,7 @@ int main (int argc, char* argv[])
 
     omp_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(omp_t2 - omp_t1).count();
 
-	printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(omp_pi_r - PI), omp_totalTime);
+	printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", omp_pi_r, fabs(omp_pi_r - PI), omp_totalTime);
     assert(fabs(omp_pi_r - PI) <= 0.001);
 
 	#endif
@@ -109,7 +101,7 @@ int main (int argc, char* argv[])
 
     cu_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(cu_t2 - cu_t1).count();
 
-    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(cu_pi_r - PI), cu_totalTime);
+    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", cu_pi_r, fabs(cu_pi_r - PI), cu_totalTime);
     assert(fabs(cu_pi_r - PI) <= 0.001);
 
 #endif
