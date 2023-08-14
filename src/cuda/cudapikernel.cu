@@ -1,10 +1,6 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <stdio.h>
-#include <cstdlib>
-#include <iostream>
-#include <iomanip>
-#include <chrono>
 #include <math.h>
 #include <assert.h>
 
@@ -13,21 +9,6 @@ const long STEP_NUM = 32768 * 32768;
 const float STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
-
-/*
-inline void checkCUDAError(const char *fileName, const int line)
-{
-    #ifdef DEBUG
-        cudaThreadSynchronize();
-        cudaError_t = cudaGetLastError();
-        if(error != cudaSuccess)
-        {
-            printf("Error at %s: line %i: %s\n", fileName, line, cudaGetErrorString(error));
-			exit(-1); 
-        }
-    #endif
-}
-*/
 
 __global__ void integrate(float *globalSum, int stepNum, float stepLength, int threadNum, int blockNum)
 {
@@ -67,6 +48,7 @@ __global__ void integrate(float *globalSum, int stepNum, float stepLength, int t
     }
 }
 
+//sum reduction function
 __global__ void sumReduce(float *sum, float *sumArray, int arraySize)
 {
     int localThreadId = threadIdx.x;
@@ -115,9 +97,11 @@ int main()
     float *deviceBlockSum;
     float *devicePi;
 
+    //allocate memory on GPU (device)
     cudaMalloc((void **) &devicePi, sizeof(float));
     cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
 
+    //timer 
     cudaEvent_t startTime, stopTime;
     cudaEventCreate(&startTime);
     cudaEventCreate(&stopTime);
@@ -126,6 +110,7 @@ int main()
     integrate<<<BLOCK_NUM, THREAD_NUM>>>(deviceBlockSum, STEP_NUM, STEP_LENGTH, THREAD_NUM, BLOCK_NUM);
     sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
 
+    //get result to host from device
     cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
 
     cudaEventRecord(stopTime, 0);
@@ -137,6 +122,7 @@ int main()
     printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(pi - PI), gpuTime / 1000);
     assert(fabs(pi - PI) <= 0.001);
 
+    //free memory
     cudaFree(deviceBlockSum);
 
     cudaDeviceReset();
