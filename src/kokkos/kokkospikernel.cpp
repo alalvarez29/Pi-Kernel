@@ -11,7 +11,7 @@ const float STEP_LENGTH = 1.0 / STEP_NUM;
 
 int main (int argc, char* argv[])
 {
-    printf("Approximate pi using a Riemann sum...\n");
+    printf("Approximate pi using a Riemann sum...\n\n");
 
     Kokkos::initialize (argc, argv);
     {
@@ -47,10 +47,10 @@ int main (int argc, char* argv[])
 
     auto seq_t2 = std::chrono::high_resolution_clock::now();
 
-    seq_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(seq_t2 - seq_t1).count();
+    seq_totalTime = std::chrono::duration_cast<std::chrono::seconds<float> >(seq_t2 - seq_t1).count();
 
     printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", seq_pi, fabs(seq_pi - PI), seq_totalTime);
-    assert(fabs(pi - PI) <= 0.001);
+    assert(fabs(seq_pi - PI) <= 0.001);
 
 #if defined(KOKKOS_ENABLE_OPENMP)
 
@@ -72,7 +72,7 @@ int main (int argc, char* argv[])
 
     auto omp_t2 = std::chrono::high_resolution_clock::now();
 
-    omp_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(omp_t2 - omp_t1).count();
+    omp_totalTime = std::chrono::duration_cast<std::chrono::seconds<float> >(omp_t2 - omp_t1).count();
 
 	printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", omp_pi_r, fabs(omp_pi_r - PI), omp_totalTime);
     assert(fabs(omp_pi_r - PI) <= 0.001);
@@ -99,7 +99,7 @@ int main (int argc, char* argv[])
 
     auto cu_t2 = std::chrono::high_resolution_clock::now();
 
-    cu_totalTime = std::chrono::duration_cast<std::chrono::duration<float> >(cu_t2 - cu_t1).count();
+    cu_totalTime = std::chrono::duration_cast<std::chrono::seconds<float> >(cu_t2 - cu_t1).count();
 
     printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", cu_pi_r, fabs(cu_pi_r - PI), cu_totalTime);
     assert(fabs(cu_pi_r - PI) <= 0.001);
