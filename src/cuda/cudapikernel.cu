@@ -5,7 +5,10 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <math.h>
+#include <assert.h>
 
+const float PI = 3.1415926535897932;
 const long STEP_NUM = 32768 * 32768;
 const float STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
@@ -26,7 +29,7 @@ inline void checkCUDAError(const char *fileName, const int line)
 }
 */
 
-__global__ void integrate(float *globalSum, int stepNum, float, stepLength, int threadNum, int blockNum)
+__global__ void integrate(float *globalSum, int stepNum, float stepLength, int threadNum, int blockNum)
 {
     int globalThreadId = threadIdx.x + blockIdx.x * blockDim.x;
     int start = (stepNum / (blockNum * threadNum)) * globalThreadId;
@@ -122,4 +125,20 @@ int main()
     printf("Approximate pi using a Riemann sum...\n");
     integrate<<<BLOCK_NUM, THREAD_NUM>>>(deviceBlockSum, STEP_NUM, STEP_LENGTH, THREAD_NUM, BLOCK_NUM);
     sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
+
+    cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
+
+    cudaEventRecord(stopTime, 0);
+    cudaEventSynchronize(stopTime);
+    float gpuTime = 0;
+    cudaEventElapsedTime(&gpuTime, startTime, stopTime);
+
+    printf("Running CUDA pi approximation...\n");
+    printf("PI = %.16lf with error %.16lf\nTime elapsed : %f seconds.\n\n", pi, fabs(pi - PI), gpuTime / 1000);
+    assert(fabs(pi - PI) <= 0.001);
+
+    cudaFree(deviceBlockSum);
+
+    cudaDeviceReset();
+    return 0;
 }
