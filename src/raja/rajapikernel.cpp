@@ -17,6 +17,7 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 	std::cout << "Approximate pi using a Riemann sum..." << std::endl;
 	std::cout << std::endl;
 
+	const double PI = 3.1415926535897932;
 	//N: number of subintervals (2^30 by default)
 	const int N = 32768 * 32768;
 	//dx: size of each subinterval
@@ -50,6 +51,9 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 
 	std::cout << "\tpi = " << std::setprecision(prec) << seq_pi_val << std::endl;
 
+	std::cout << "\terror = " << std::setprecision(prec) << fabs(seq_pi_val - PI) << std::endl;
+
+
 	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
 
@@ -80,6 +84,9 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 		omp_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(omp_t2 - omp_t1).count();
 
 		std::cout << "\tpi = " << std::setprecision(prec) << omp_pi_val << std::endl;
+
+		std::cout << "\terror = " << std::setprecision(prec) << fabs(omp_pi_val - PI) << std::endl;
+
 
 		std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
 		std::cout << std::endl;
@@ -112,6 +119,8 @@ int main(int RAJA_UNUSED_ARG(argc), char** RAJA_UNUSED_ARG(argv[]))
 		cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
 		std::cout << "\tpi = " << std::setprecision(prec) << cuda_pi_val << std::endl;
+
+		std::cout << "\terror = " << std::setprecision(prec) << fabs(cuda_pi_val - PI) << std::endl;
 
         std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
 		std::cout << std::endl;
