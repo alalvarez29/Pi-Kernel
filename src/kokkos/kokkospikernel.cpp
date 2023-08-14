@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <cmath>
 
 #include <Kokkos_Core.hpp>
 
@@ -10,6 +11,7 @@ int main (int argc, char* argv[])
     std::cout << "Approximate pi using a Riemann sum..." << std::endl;
 	std::cout << std::endl;
 
+    const double PI = 3.1415926535897932;
 	//N: number of subintervals (2^30 by default)
 	const int N = 32768 * 32768;
 	//dx: size of each subinterval
@@ -55,6 +57,8 @@ int main (int argc, char* argv[])
     seq_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(seq_t2 - seq_t1).count();
 
 	std::cout << "\tpi = " << std::setprecision(prec) << seq_pi << std::endl;
+    
+    std::cout << "\terror = " << std::setprecision(prec) << fabs(seq_pi - PI) << std::endl;
 
 	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
@@ -84,6 +88,8 @@ int main (int argc, char* argv[])
 
 	std::cout << "\tpi = " << std::setprecision(prec) << omp_pi_r << std::endl;
 
+    std::cout << "\terror = " << std::setprecision(prec) << fabs(omp_pi_r - PI) << std::endl;
+
 	std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
 
@@ -112,6 +118,8 @@ int main (int argc, char* argv[])
     cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
 	std::cout << "\tpi = " << std::setprecision(prec) << cu_pi_r << std::endl;
+
+    std::cout << "\terror = " << std::setprecision(prec) << fabs(cu_pi_r - PI) << std::endl;
 
 	std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
