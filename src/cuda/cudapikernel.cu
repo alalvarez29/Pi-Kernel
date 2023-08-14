@@ -4,13 +4,13 @@
 #include <math.h>
 #include <assert.h>
 
-const double PI = 3.1415926535897932;
-const int STEP_NUM = 32768 * 32768;
-const double STEP_LENGTH = 1.0 / STEP_NUM;
+const float PI = 3.1415926535897932;
+const long STEP_NUM = 32768 * 32768;
+const float STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
 
-__global__ void integrate(double *globalSum, int stepNum, double stepLength, int threadNum, int blockNum)
+__global__ void integrate(float *globalSum, int stepNum, float stepLength, int threadNum, int blockNum)
 {
     int globalThreadId = threadIdx.x + blockIdx.x * blockDim.x;
     int start = (stepNum / (blockNum * threadNum)) * globalThreadId;
@@ -18,15 +18,15 @@ __global__ void integrate(double *globalSum, int stepNum, double stepLength, int
     int localThreadId = threadIdx.x;
     int blockId = blockIdx.x;
 
-    __shared__ double blockSum[THREAD_NUM];
+    __shared__ float blockSum[THREAD_NUM];
 
-    memset(blockSum, 0, threadNum * sizeof(double));
+    memset(blockSum, 0, threadNum * sizeof(float));
 
-    double x;
+    float x;
     for(int i = start; i < end; i++)
     {
-        x = (i + 0.5) * stepLength;
-        blockSum[localThreadId] += 1.0 / (1.0 + x * x);
+        x = (i + 0.5f) * stepLength;
+        blockSum[localThreadId] += 1.0f / (1.0f + x * x);
     }
     blockSum[localThreadId] *= stepLength * 4;
 
@@ -48,8 +48,7 @@ __global__ void integrate(double *globalSum, int stepNum, double stepLength, int
     }
 }
 
-//sum reduction function
-__global__ void sumReduce(double *sum, double *sumArray, int arraySize)
+__global__ void sumReduce(float *sum, float *sumArray, int arraySize)
 {
     int localThreadId = threadIdx.x;
 
@@ -93,13 +92,13 @@ int main()
         printf("%d CUDA Capable device(s) detected\n", deviceCount);
     }
 
-    double pi = 0.0;
-    double *deviceBlockSum;
-    double *devicePi;
+    float pi = 0.0;
+    float *deviceBlockSum;
+    float *devicePi;
 
     //allocate memory on GPU (device)
-    cudaMalloc((void **) &devicePi, sizeof(double));
-    cudaMalloc((void **) &deviceBlockSum, sizeof(double) * BLOCK_NUM);
+    cudaMalloc((void **) &devicePi, sizeof(float));
+    cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
 
     //timer 
     cudaEvent_t startTime, stopTime;
@@ -111,7 +110,7 @@ int main()
     sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
 
     //get result to host from device
-    cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
 
     cudaEventRecord(stopTime, 0);
     cudaEventSynchronize(stopTime);
