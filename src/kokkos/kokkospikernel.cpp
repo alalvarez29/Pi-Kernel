@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <chrono>
@@ -103,7 +102,7 @@ int main (int argc, char* argv[])
 	std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
 
-	#endif
+#endif
 
 #if defined(KOKKOS_ENABLE_CUDA)
 
@@ -132,11 +131,13 @@ int main (int argc, char* argv[])
             std::cout << "\terror = " << std::setprecision(prec) << fabs(cu_pi_r - PI) << std::endl;
         }
     }
+
     auto cu_t2 = std::chrono::high_resolution_clock::now();
     cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
 	std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
+    
 #endif
 
     }
