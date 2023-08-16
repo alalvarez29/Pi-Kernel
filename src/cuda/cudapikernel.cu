@@ -1,9 +1,5 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-#include <stdio.h>
-#include <math.h>
-#include <assert.h>
-#include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <cmath>
@@ -13,6 +9,7 @@ const long STEP_NUM = 32768 * 32768;
 const float STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
+const int NREPEAT = 50;
 
 __global__ void integrate(float *globalSum, int stepNum, float stepLength, int threadNum, int blockNum)
 {
@@ -76,24 +73,26 @@ int main()
 {
     int deviceCount = 0;
 
-    printf("\nConfiguring device...\n");
+    std::cout << "Configuring device..." << std::endl;
 
     cudaError_t error = cudaGetDeviceCount(&deviceCount);
 
     if(error != cudaSuccess)
     {
+        std::cout << "cudaGetDeviceCount returned" << (int)error << std::endl;
+        std::cout << cudaGetErrorString(error) << std::endl;
         printf("cudaGetDeviceCount returned %d\n-> %s\n", (int)error, cudaGetErrorString(error));
         return 1;
     }
 
     if(deviceCount == 0)
     {
-        printf("There are no available CUDA device(s)\n");
+        std::cout << "There are no available CUDA devices(s)" << std::endl;
         return 1;
     }
     else
     {
-        printf("%d CUDA Capable device(s) detected\n", deviceCount);
+        std::cout << "CUDA Capable device(s) detected " << deviceCount << std::endl;
     }
 
     float pi = 0.0;
@@ -109,23 +108,29 @@ int main()
     cudaEventCreate(&startTime);
     cudaEventCreate(&stopTime);
     cudaEventRecord(startTime, 0);
-    printf("Approximate pi using a Riemann sum...\n");
-    integrate<<<BLOCK_NUM, THREAD_NUM>>>(deviceBlockSum, STEP_NUM, STEP_LENGTH, THREAD_NUM, BLOCK_NUM);
-    sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
+    std::cout << "Approximate pi using a Riemann sum" << std::endl;
+    std::cout << std::endl;
 
-    //get result to host from device
-    cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
+    std::cout << "Running CUDA pi approximation" << std::endl;
 
+    for(int repeat = 0; repeat < NREPEAT; repeat++)
+    {
+        integrate<<<BLOCK_NUM, THREAD_NUM>>>(deviceBlockSum, STEP_NUM, STEP_LENGTH, THREAD_NUM, BLOCK_NUM);
+        sumReduce<<<1, BLOCK_NUM>>>(devicePi, deviceBlockSum, BLOCK_NUM);
+
+        if(repeat == (NREPEAT - 1))
+        {
+            //get result to host from device
+            cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
+
+            std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
+            std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
+        }
+    }
     cudaEventRecord(stopTime, 0);
     cudaEventSynchronize(stopTime);
     float gpuTime = 0;
     cudaEventElapsedTime(&gpuTime, startTime, stopTime);
-
-    printf("Running CUDA pi approximation...\n");
-
-    std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
-
-    std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
 
 	std::cout << "Time elapsed to get the result: " << gpuTime / 1000 << " seconds" << std::endl;
 	std::cout << std::endl;
