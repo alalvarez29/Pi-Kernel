@@ -6,7 +6,7 @@
 #include <CL/sycl.hpp>
 using namespace cl::sycl;
 
-#define NTRD 512
+#define NTRD 256
 
 int main(int argc, char* argv[])
 {
@@ -20,13 +20,16 @@ int main(int argc, char* argv[])
     int nrepeat = 50;
     int prec = 16;
 
-    double totalTime, x;
+    double totalTime;
 
     std::array<double, NTRD> sum;
-    for(int i = 0; i < NTRD; i++) sum[i] = 0.0;
+
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for(int repeat = 0; repeat < nrepeat; repeat++)
+    {
+        for(int i = 0; i < NTRD; i++) sum[i] = 0.0;
     {
         queue q(default_selector_v);
-        std::cout << "Running on: " << q.get_device().get_info<info::device::name>() << std::endl;
         range<1> sizeBuf{NTRD};
         buffer<double, 1> sumBuf(sum.data(), sizeBuf);
         q.submit([&](handler &h)
@@ -50,15 +53,18 @@ int main(int argc, char* argv[])
     }
     pi *= dx;
 
-    auto t1 = std::chrono::high_resolution_clock::now();
-
+    if(repeat == (nrepeat - 1))
+    {
+        queue q(default_selector_v);
+        std::cout << "Running on: " << q.get_device().get_info<info::device::name>() << std::endl;
+        std::cout << "\tpi = " << std::setprecision(prec) << pi << std::endl;
+        std::cout << "\terror = " << std::setprecision(prec) << fabs(pi - PI) << std::endl;
+    }
+    }
     auto t2 = std::chrono::high_resolution_clock::now();
-
+    
     totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
 
 	std::cout << "Time elapsed to get the result: " << totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
-
-    std::cout << "\tpi = " << std::setprecision(prec) << pi << std::endl;
-    std::cout << "\terror = " << std::setprecision(prec) << fabs(pi - PI) << std::endl;
 }
