@@ -64,6 +64,7 @@ register_model(raja USE_RAJA rajapikernel.cpp)
 register_model(kokkos KOKKOS kokkospikernel.cpp)
 register_model(omp OMP omppikernel.cpp)
 register_model(cuda CUDA cudapikernel.cu)
+register_model(sycl SYCL syclpikernel.cpp)
 
 set(USAGE ON CACHE BOOL "Whether to print all custom flags for the selected model")
 
