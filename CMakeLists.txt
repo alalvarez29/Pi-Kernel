@@ -9,6 +9,22 @@ project(PiKernel VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(FetchContent)
+
+FetchContent_Declare(
+        opencl_header
+        URL https://github.com/KhronosGroup/OpenCL-Headers/archive/refs/tags/v2021.06.30.zip
+        URL_HASH MD5=af7ab7918a6a11c60370c8651a9f0192
+)
+
+macro(setup_opencl_header_includes)
+    FetchContent_GetProperties(opencl_header)
+    if (NOT opencl_header_POPULATED)
+        FetchContent_Populate(opencl_header)
+        set(OpenCL_INCLUDE_DIR ${opencl_header_SOURCE_DIR})
+    endif ()
+endmacro()
+
 # the final executable name
 set(EXE_NAME pikernel)
 
