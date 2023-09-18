@@ -75,3 +75,12 @@ kokkos;raja;omp;sycl;cuda
 ```
 
 ## References
+
+* Deakin T, Price J, Martineau M, McIntosh-Smith S. Evaluating attainable memory bandwidth of parallel programming models via BabelStream. International Journal of Computational Science and Engineering. Special issue. Vol. 17, No. 3, pp. 247–262. 2018. DOI: 10.1504/IJCSE.2018.095847
+
+* Kokkos C++ Performance Portability Programming EcoSystem https://github.com/kokkos/kokkos
+
+* RAJA Performance Portability Layer (C++) https://github.com/LLNL/RAJA
+
+* oneAPI open source projects https://github.com/oneapi-src
+
