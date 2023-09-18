@@ -10,11 +10,13 @@ int main (int argc, char* argv[])
     std::cout << "Approximate pi using a Riemann sum..." << std::endl;
 	std::cout << std::endl;
 
+    //PI constant
     const double PI = 3.1415926535897932;
 	//N: number of subintervals (2^30 by default)
 	const int N = 32768 * 32768;
 	//dx: size of each subinterval
 	const double dx = 1.0 / double(N);
+    //nrepeat: number of repetitions
     int nrepeat = 50;
 
 	//Set the precision for printing pi
@@ -68,7 +70,7 @@ int main (int argc, char* argv[])
 	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
     
-#if defined(KOKKOS_ENABLE_OPENMP)
+    #if defined(KOKKOS_ENABLE_OPENMP)
 
 	std::cout << "Running Kokkos OpenMP pi approximation..." << std::endl;
 	
@@ -102,9 +104,9 @@ int main (int argc, char* argv[])
 	std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
 
-#endif
+    #endif
 
-#if defined(KOKKOS_ENABLE_CUDA)
+    #if defined(KOKKOS_ENABLE_CUDA)
 
     std::cout << "Running Kokkos CUDA pi approximation..." << std::endl;
 
@@ -138,7 +140,7 @@ int main (int argc, char* argv[])
 	std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
     
-#endif
+    #endif
 
     }
     Kokkos::finalize();
