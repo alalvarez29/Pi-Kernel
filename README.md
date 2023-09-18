@@ -47,10 +47,18 @@ Pi-Kernel is supported by the following parallel programming models:
 
 The building of the implementation of this benchmark requires the following steps:
 
-1. Download the source code
+1. Download the benchmark source code
 ```
-$ git clone https://github.com/uqbarcitizen/Pi-Kernel.git
+git clone https://github.com/uqbarcitizen/Pi-Kernel.git
+```
+2. Get into the root folder
+```
+cd Pi-Kernel
+```
+3. Configure the build, the specific model and the specific required flags
+```
+cmake -Bbuild -H. -DMODEL=<model> -D<specific_flags...>
+```
 
-```
 
 ## References
