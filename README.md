@@ -59,6 +59,19 @@ cd Pi-Kernel
 ```
 cmake -Bbuild -H. -DMODEL=<model> -D<specific_flags...>
 ```
+4. Compile
+```
+cmake --build build
+```
+5. Run the selected model implementation executable located in Pi-Kernel/build
+```
+./<model>-pikernel
+```
 
+Where MODEL option selects the parallel programming model and can be:
+
+```
+kokkos;raja;omp;sycl;cuda
+```
 
 ## References
