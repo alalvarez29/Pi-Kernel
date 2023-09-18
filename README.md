@@ -35,8 +35,22 @@ The parameters used in this benchmark are the following:
 
 ## Programming models
 
+Pi-Kernel is supported by the following parallel programming models:
+
+- Kokkos
+- RAJA
+- OpenMP
+- SYCL
+- CUDA
 
 ## Building 
 
+The building of the implementation of this benchmark requires the following steps:
+
+1. Download the source code
+```
+$ git clone https://github.com/uqbarcitizen/Pi-Kernel.git
+
+```
 
 ## References
