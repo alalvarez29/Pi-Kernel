@@ -13,7 +13,9 @@ This benchmark implements an algorithm to calculate the approximation of the pi 
 
 This kernel is based on the Riemann sum to get an estimate of the pi number, the following equations describes the mathematical implementation of the aproximation and its discrete form.
 
-<img src="imgs/1.jpeg?raw=true" alt="eq"/>
+<img src="imgs/1.jpeg?raw=true" alt="eq" align="center"/>
+<img src="imgs/2.jpeg?raw=true" alt="eq" align="center"/>
+
 
 ## Programming models
 
