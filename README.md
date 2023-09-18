@@ -26,13 +26,12 @@ This kernel is based on the Riemann sum to get an estimate of the pi number, the
 
 The parameters used in this benchmark are the following:
 
-<p align="center">
-    | Parameter | Value | Description |
-    | --- | --- | --- |
-    | N | 2^30 = 32768∗32768 | Number of subintervals |
-    | dx | 1 / N | Size of each subinterval |
-</p>
-
+| Parameter | Value | Description |
+| --- | --- | --- |
+| N | 2^30 = 32768∗32768 | Number of subintervals |
+| dx | 1 / N | Size of each subinterval |
+| nrepeat | 50 | Number of repetitions |
+| prec | 16 | Digit precision for the result |
 
 ## Programming models
 
