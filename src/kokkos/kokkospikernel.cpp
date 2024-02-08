@@ -11,16 +11,16 @@ int main (int argc, char* argv[])
 	std::cout << std::endl;
 
     //PI constant
-    const double PI = 3.1415926535897932;
-	//N: number of subintervals (2^30 by default)
-	const int N = 32768 * 32768;
+    const long double PI = 3.14159265358979323846;
+	//N: number of subintervals (2^33 by default)
+	long long N = 2048 * 2048 * 2048LL;
 	//dx: size of each subinterval
-	const double dx = 1.0 / double(N);
+	const long double dx = 1.0 / N;
     //nrepeat: number of repetitions
     int nrepeat = 50;
 
 	//Set the precision for printing pi
-	int prec = 16;
+	int prec = 20;
 
     Kokkos::initialize (argc, argv);
     {
@@ -46,11 +46,11 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        double seq_pi = 0.0;
+        long double seq_pi = 0.0;
 
-        for (int i = 0; i < N; ++i) 
+        for (long long i = 0; i < N; ++i) 
         {
-            double x = (double(i) + 0.5) * dx;
+            long double x = (i + 0.5) * dx;
             seq_pi += dx / (1.0 + x * x);
         }
 
@@ -70,6 +70,7 @@ int main (int argc, char* argv[])
 	std::cout << "Time elapsed to get the result: " << seq_totalTime << " seconds" << std::endl;
 	std::cout << std::endl;
     
+    //Kokkos OpenMP implementation
     #if defined(KOKKOS_ENABLE_OPENMP)
 
 	std::cout << "Running Kokkos OpenMP pi approximation..." << std::endl;
@@ -80,15 +81,15 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        double omp_pi = 0.0;
+        long double omp_pi = 0.0;
 
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& omp_pi_val)
+        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long long i, long double& omp_pi_val)
         {
-            double x = (double(i) + 0.5) * dx;
+            long double x = (i + 0.5) * dx;
 		    omp_pi_val += dx / (1.0 + x * x);
         }, omp_pi);
   
-        double omp_pi_r = omp_pi * 4.0;
+        long double omp_pi_r = omp_pi * 4.0;
 
         if(repeat == (nrepeat - 1))
         {
@@ -106,6 +107,7 @@ int main (int argc, char* argv[])
 
     #endif
 
+    //Kokkos CUDA implementation
     #if defined(KOKKOS_ENABLE_CUDA)
 
     std::cout << "Running Kokkos CUDA pi approximation..." << std::endl;
@@ -117,15 +119,15 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        double cuda_pi = 0.0;
+        long double cuda_pi = 0.0;
 
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(const int i, double& cu_pi_val)
+        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long long i, long double& cu_pi_val)
         {
-            double x = (double(i) + 0.5) * dx;
+            long double x = (i + 0.5) * dx;
 		    cu_pi_val += dx / (1.0 + x * x);
         }, cuda_pi);
   
-        double cu_pi_r = cuda_pi * 4.0;
+        long double cu_pi_r = cuda_pi * 4.0;
 
         if(repeat == (nrepeat -1))
         {
