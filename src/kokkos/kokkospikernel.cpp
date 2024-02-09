@@ -13,9 +13,9 @@ int main (int argc, char* argv[])
     //PI constant
     const long double PI = 3.14159265358979323846;
 	//N: number of subintervals (2^33 by default)
-	long long N = 2048 * 2048 * 2048LL;
+	long N = pow(2,33);
 	//dx: size of each subinterval
-	const long double dx = 1.0 / N;
+	double dx = 1.0 / N;
     //nrepeat: number of repetitions
     int nrepeat = 50;
 
@@ -46,11 +46,11 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        long double seq_pi = 0.0;
+        double seq_pi = 0.0;
 
-        for (long long i = 0; i < N; ++i) 
+        for (long i = 0; i < N; ++i) 
         {
-            long double x = (i + 0.5) * dx;
+            double x = (i + 0.5) * dx;
             seq_pi += dx / (1.0 + x * x);
         }
 
@@ -81,15 +81,15 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        long double omp_pi = 0.0;
+        double omp_pi = 0.0;
 
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long long i, long double& omp_pi_val)
+        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long i, double& omp_pi_val)
         {
-            long double x = (i + 0.5) * dx;
+            double x = (i + 0.5) * dx;
 		    omp_pi_val += dx / (1.0 + x * x);
         }, omp_pi);
   
-        long double omp_pi_r = omp_pi * 4.0;
+        double omp_pi_r = omp_pi * 4.0;
 
         if(repeat == (nrepeat - 1))
         {
@@ -119,15 +119,15 @@ int main (int argc, char* argv[])
 
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
-        long double cuda_pi = 0.0;
+        double cuda_pi = 0.0;
 
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long long i, long double& cu_pi_val)
+        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long i, double& cu_pi_val)
         {
-            long double x = (i + 0.5) * dx;
+            double x = (i + 0.5) * dx;
 		    cu_pi_val += dx / (1.0 + x * x);
         }, cuda_pi);
   
-        long double cu_pi_r = cuda_pi * 4.0;
+        double cu_pi_r = cuda_pi * 4.0;
 
         if(repeat == (nrepeat -1))
         {
