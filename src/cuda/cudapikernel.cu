@@ -96,12 +96,12 @@ int main()
     }
 
     double pi = 0.0;
-    double *deviceBlockSum;
-    double *devicePi;
+    float *deviceBlockSum;
+    float *devicePi;
 
     //allocate memory on GPU (device)
-    cudaMalloc((void **) &devicePi, sizeof(double));
-    cudaMalloc((void **) &deviceBlockSum, sizeof(double) * BLOCK_NUM);
+    cudaMalloc((void **) &devicePi, sizeof(float));
+    cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
 
     //timer 
     cudaEvent_t startTime, stopTime;
@@ -121,7 +121,7 @@ int main()
         if(repeat == (NREPEAT - 1))
         {
             //get result to host from device
-            cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
 
             std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
             std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
