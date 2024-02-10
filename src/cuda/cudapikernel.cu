@@ -9,7 +9,7 @@ const long STEP_NUM = pow(2,36);
 const double STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
-const int NREPEAT = 50;
+const int NREPEAT = 100;
 
 __global__ void integrate(double *globalSum, long stepNum, double stepLength, int threadNum, int blockNum)
 {
