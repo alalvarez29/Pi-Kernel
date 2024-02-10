@@ -11,7 +11,7 @@ const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
 const int NREPEAT = 50;
 
-__global__ void integrate(float *globalSum, long stepNum, double stepLength, int threadNum, int blockNum)
+__global__ void integrate(double *globalSum, long stepNum, double stepLength, int threadNum, int blockNum)
 {
     int globalThreadId = threadIdx.x + blockIdx.x * blockDim.x;
     long start = (stepNum / (blockNum * threadNum)) * globalThreadId;
@@ -96,12 +96,12 @@ int main()
     }
 
     double pi = 0.0;
-    float *deviceBlockSum;
-    float *devicePi;
+    double *deviceBlockSum;
+    double *devicePi;
 
     //allocate memory on GPU (device)
-    cudaMalloc((void **) &devicePi, sizeof(float));
-    cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
+    cudaMalloc((void **) &devicePi, sizeof(double));
+    cudaMalloc((void **) &deviceBlockSum, sizeof(double) * BLOCK_NUM);
 
     //timer 
     cudaEvent_t startTime, stopTime;
@@ -121,7 +121,7 @@ int main()
         if(repeat == (NREPEAT - 1))
         {
             //get result to host from device
-            cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
 
             std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
             std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
