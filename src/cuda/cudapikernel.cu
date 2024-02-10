@@ -4,27 +4,27 @@
 #include <iomanip>
 #include <cmath>
 
-const double PI = 3.14159265358979323846;
-const long STEP_NUM = 32768 * 32768;
+const double PI = 3.1415926535897932;
+const long STEP_NUM = pow(2,36);
 const double STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
 const int NREPEAT = 50;
 
-__global__ void integrate(float *globalSum, int stepNum, float stepLength, int threadNum, int blockNum)
+__global__ void integrate(float *globalSum, long stepNum, double stepLength, int threadNum, int blockNum)
 {
     int globalThreadId = threadIdx.x + blockIdx.x * blockDim.x;
-    int start = (stepNum / (blockNum * threadNum)) * globalThreadId;
-    int end = (stepNum / (blockNum * threadNum)) * (globalThreadId + 1);
+    long start = (stepNum / (blockNum * threadNum)) * globalThreadId;
+    long end = (stepNum / (blockNum * threadNum)) * (globalThreadId + 1);
     int localThreadId = threadIdx.x;
     int blockId = blockIdx.x;
 
-    __shared__ float blockSum[THREAD_NUM];
+    __shared__ double blockSum[THREAD_NUM];
 
-    memset(blockSum, 0, threadNum * sizeof(float));
+    memset(blockSum, 0, threadNum * sizeof(double));
 
     double x;
-    for(int i = start; i < end; i++)
+    for(long i = start; i < end; i++)
     {
         x = (i + 0.5) * stepLength;
         blockSum[localThreadId] += 1.0 / (1.0 + x * x);
@@ -49,7 +49,7 @@ __global__ void integrate(float *globalSum, int stepNum, float stepLength, int t
     }
 }
 
-__global__ void sumReduce(double *sum, double *sumArray, int arraySize)
+__global__ void sumReduce(double *sum, double *sumArray, long arraySize)
 {
     int localThreadId = threadIdx.x;
 
@@ -123,7 +123,7 @@ int main()
             //get result to host from device
             cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
 
-            std::cout << "\tpi = " << std::setprecision(20) << pi << std::endl;
+            std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
             std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
         }
     }
