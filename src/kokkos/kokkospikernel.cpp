@@ -11,16 +11,16 @@ int main (int argc, char* argv[])
 	std::cout << std::endl;
 
     //PI constant
-    const long double PI = 3.14159265358979323846;
+    const double PI = 3.1415926535897932;
 	//N: number of subintervals (2^33 by default)
-	long N = pow(2,33);
+	const long N = pow(2,36);
 	//dx: size of each subinterval
-	double dx = 1.0 / N;
+	const double dx = 1.0 / N;
     //nrepeat: number of repetitions
-    int nrepeat = 50;
+    const int nrepeat = 100;
 
 	//Set the precision for printing pi
-	int prec = 20;
+	int prec = 16;
 
     Kokkos::initialize (argc, argv);
     {
