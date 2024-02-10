@@ -4,9 +4,9 @@
 #include <iomanip>
 #include <cmath>
 
-const float PI = 3.1415926535897932;
+const double PI = 3.14159265358979323846;
 const long STEP_NUM = 32768 * 32768;
-const float STEP_LENGTH = 1.0 / STEP_NUM;
+const double STEP_LENGTH = 1.0 / STEP_NUM;
 const int THREAD_NUM = 512;
 const int BLOCK_NUM = 64;
 const int NREPEAT = 50;
@@ -23,11 +23,11 @@ __global__ void integrate(float *globalSum, int stepNum, float stepLength, int t
 
     memset(blockSum, 0, threadNum * sizeof(float));
 
-    float x;
+    double x;
     for(int i = start; i < end; i++)
     {
-        x = (i + 0.5f) * stepLength;
-        blockSum[localThreadId] += 1.0f / (1.0f + x * x);
+        x = (i + 0.5) * stepLength;
+        blockSum[localThreadId] += 1.0 / (1.0 + x * x);
     }
     blockSum[localThreadId] *= stepLength * 4;
 
@@ -49,7 +49,7 @@ __global__ void integrate(float *globalSum, int stepNum, float stepLength, int t
     }
 }
 
-__global__ void sumReduce(float *sum, float *sumArray, int arraySize)
+__global__ void sumReduce(double *sum, double *sumArray, int arraySize)
 {
     int localThreadId = threadIdx.x;
 
@@ -95,13 +95,13 @@ int main()
         std::cout << "CUDA Capable device(s) detected " << deviceCount << std::endl;
     }
 
-    float pi = 0.0;
-    float *deviceBlockSum;
-    float *devicePi;
+    double pi = 0.0;
+    double *deviceBlockSum;
+    double *devicePi;
 
     //allocate memory on GPU (device)
-    cudaMalloc((void **) &devicePi, sizeof(float));
-    cudaMalloc((void **) &deviceBlockSum, sizeof(float) * BLOCK_NUM);
+    cudaMalloc((void **) &devicePi, sizeof(double));
+    cudaMalloc((void **) &deviceBlockSum, sizeof(double) * BLOCK_NUM);
 
     //timer 
     cudaEvent_t startTime, stopTime;
@@ -121,9 +121,9 @@ int main()
         if(repeat == (NREPEAT - 1))
         {
             //get result to host from device
-            cudaMemcpy(&pi, devicePi, sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
 
-            std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
+            std::cout << "\tpi = " << std::setprecision(20) << pi << std::endl;
             std::cout << "\terror = " << std::fixed << fabs(pi - PI) << std::endl;
         }
     }
