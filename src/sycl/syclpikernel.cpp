@@ -18,12 +18,13 @@ int main(int argc, char* argv[])
  
     //PI constant
     const double PI = 3.1415926535897932;
-	//N: number of subintervals (2^30 by default)
-	const int N = 32768 * 32768;
-	//dx: size of each subinterval
-	const double dx = 1.0 / double(N);
+    //N: number of subintervals (2^30 by default)
+    const long N = pow(2,36);
+    //dx: size of each subinterval
+    const double dx = 1.0 / double(N);
     //nrepeat: number of repetitions
-    int nrepeat = 50;
+    int nrepeat = 100;
+    int prec = 16;
 
     double totalTime;
 
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
                 auto sumAccessor = sumBuf.get_access<access::mode::read_write>(h);
                 h.parallel_for(sizeBuf, [=](id<1> tid)
                 {
-                    for(int i=tid; i < N; i+=NTRD)
+                    for(long i=tid; i < N; i+=NTRD)
                     {
                         double x = (double(i) + 0.5) * dx;
                         sumAccessor[tid] += 4.0 / (1.0 + x * x);
