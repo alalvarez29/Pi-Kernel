@@ -3,32 +3,29 @@
 #include <chrono>
 #include <cmath>
 
-#include <Kokkos_Core.hpp>
+#include <Kokkos_Vector.hpp>
 
 int main (int argc, char* argv[])
 {
     std::cout << "Approximate pi using a Riemann sum..." << std::endl;
-	std::cout << std::endl;
+        std::cout << std::endl;
 
     //PI constant
     const double PI = 3.1415926535897932;
-	//N: number of subintervals (2^33 by default)
-	const long N = pow(2,36);
-	//dx: size of each subinterval
-	const double dx = 1.0 / N;
+    //N: number of subintervals (2^33 by default)
+    const int64_t N = pow(2LL, 36LL);
+    //dx: size of each subinterval
+    const double dx = 1.0 / N;
     //nrepeat: number of repetitions
     const int nrepeat = 100;
 
-	//Set the precision for printing pi
-	int prec = 16;
+    //Set the precision for printing pi
+    int prec = 16;
 
     Kokkos::initialize (argc, argv);
     {
     #ifdef KOKKOS_ENABLE_CUDA
     #define MemSpace Kokkos::CudaSpace
-    #endif
-    #ifdef KOKKOS_ENABLE_OPENMPTARGET
-    #define MemSpace Kokkos::OpenMPTargetSpace
     #endif
 
     #ifndef MemSpace
@@ -37,43 +34,6 @@ int main (int argc, char* argv[])
 
     using ExecSpace = MemSpace::execution_space;
     using range_policy = Kokkos::RangePolicy<ExecSpace>;
-
-    //Kokkos OpenMP implementation
-    #if defined(KOKKOS_ENABLE_OPENMP)
-
-	std::cout << "Running Kokkos OpenMP pi approximation..." << std::endl;
-	
-    double omp_totalTime;
-
-    auto omp_t1 = std::chrono::high_resolution_clock::now();
-
-    for(int repeat = 0; repeat < nrepeat; repeat++)
-    {
-        double omp_pi = 0.0;
-
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long i, double& omp_pi_val)
-        {
-            double x = (i + 0.5) * dx;
-		    omp_pi_val += dx / (1.0 + x * x);
-        }, omp_pi);
-  
-        double omp_pi_r = omp_pi * 4.0;
-
-        if(repeat == (nrepeat - 1))
-        {
-            std::cout << "\tpi = " << std::setprecision(prec) << omp_pi_r << std::endl;
-            std::cout << "\terror = " << std::setprecision(prec) << fabs(omp_pi_r - PI) << std::endl;
-        }      
-    }
-
-    auto omp_t2 = std::chrono::high_resolution_clock::now();
-
-    omp_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(omp_t2 - omp_t1).count();
-
-	std::cout << "Time elapsed to get the result: " << omp_totalTime << " seconds" << std::endl;
-	std::cout << std::endl;
-
-    #endif
 
     //Kokkos CUDA implementation
     #if defined(KOKKOS_ENABLE_CUDA)
@@ -84,17 +44,19 @@ int main (int argc, char* argv[])
 
     auto cu_t1 = std::chrono::high_resolution_clock::now();
 
-
     for(int repeat = 0; repeat < nrepeat; repeat++)
     {
         double cuda_pi = 0.0;
 
-        Kokkos::parallel_reduce(N, KOKKOS_LAMBDA(long i, double& cu_pi_val)
+        Kokkos::parallel_reduce(Kokkos::RangePolicy <Kokkos::IndexType<int64_t>> (0,N),                                                                                          KOKKOS_LAMBDA(const int64_t i, double& cu_pi_val)
         {
             double x = (i + 0.5) * dx;
-		    cu_pi_val += dx / (1.0 + x * x);
+
+            cu_pi_val += dx / (1.0 + x * x);
+
         }, cuda_pi);
-  
+        Kokkos::fence();
+
         double cu_pi_r = cuda_pi * 4.0;
 
         if(repeat == (nrepeat -1))
@@ -107,9 +69,9 @@ int main (int argc, char* argv[])
     auto cu_t2 = std::chrono::high_resolution_clock::now();
     cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
-	std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
-	std::cout << std::endl;
-    
+        std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
+        std::cout << std::endl;
+
     #endif
 
     }
