@@ -10,14 +10,10 @@ int main(int argc, char* argv[])
     std::cout << "Approximate pi using a Riemann sum..." << std::endl;
     std::cout << std::endl;
 
-    //PI constant
     const double PI = 3.1415926535897932;
-	//N: number of subintervals (2^30 by default)
-	const int N = 32768 * 32768;
-	//dx: size of each subinterval
-	const double dx = 1.0 / double(N);
-    //nrepeat: number of repetitions
-    int nrepeat = 50;
+    const long N = pow(2,36);
+    const double dx = 1.0 / double(N);
+    const int nrepeat = 100;
 
     double totalTime, x;
 
