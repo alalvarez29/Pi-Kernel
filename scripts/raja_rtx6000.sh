@@ -4,7 +4,7 @@ echo "Building the Pi Kernel benchmark"
 
 cd ..
 
-cmake -Bbuild -H. -DMODEL=raja -DCMAKE_CXX_COMPILER=g++ -DRAJA_IN_TREE=/home/cc/RAJA -DENABLE_CUDA=ON -DRAJA_ENABLE_CUDA=ON \
+cmake -Bbuild -H. -DMODEL=raja -DCMAKE_CXX_COMPILER=g++ -DRAJA_IN_TREE=/home/cc/raja -DENABLE_CUDA=ON -DRAJA_ENABLE_CUDA=ON \
 -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-12.2 -DCMAKE_CUDA_COMPILER/usr/local/cuda-12.2/bin/nvcc -DCUDA_ARCH=sm_75 -DTARGET=NVIDIA -DRAJA_ENABLE_VECTORIZATION=OFF
 
 cmake --build build
