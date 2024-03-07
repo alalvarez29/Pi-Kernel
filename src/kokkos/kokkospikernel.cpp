@@ -8,19 +8,13 @@
 int main (int argc, char* argv[])
 {
     std::cout << "Approximate pi using a Riemann sum..." << std::endl;
-        std::cout << std::endl;
+    std::cout << std::endl;
 
-    //PI constant
     const double PI = 3.1415926535897932;
-    //N: number of subintervals (2^33 by default)
     const int64_t N = pow(2LL, 36LL);
-    //dx: size of each subinterval
     const double dx = 1.0 / N;
-    //nrepeat: number of repetitions
     const int nrepeat = 100;
-
-    //Set the precision for printing pi
-    int prec = 16;
+    const int prec = 16;
 
     Kokkos::initialize (argc, argv);
     {
@@ -35,7 +29,6 @@ int main (int argc, char* argv[])
     using ExecSpace = MemSpace::execution_space;
     using range_policy = Kokkos::RangePolicy<ExecSpace>;
 
-    //Kokkos CUDA implementation
     #if defined(KOKKOS_ENABLE_CUDA)
 
     std::cout << "Running Kokkos CUDA pi approximation..." << std::endl;
@@ -48,7 +41,7 @@ int main (int argc, char* argv[])
     {
         double cuda_pi = 0.0;
 
-        Kokkos::parallel_reduce(Kokkos::RangePolicy <Kokkos::IndexType<int64_t>> (0,N),                                                                                          KOKKOS_LAMBDA(const int64_t i, double& cu_pi_val)
+        Kokkos::parallel_reduce(Kokkos::RangePolicy <Kokkos::IndexType<int64_t>> (0,N),                                                                                        KOKKOS_LAMBDA(const int64_t i, double& cu_pi_val)
         {
             double x = (i + 0.5) * dx;
 
@@ -69,8 +62,8 @@ int main (int argc, char* argv[])
     auto cu_t2 = std::chrono::high_resolution_clock::now();
     cu_totalTime = std::chrono::duration_cast<std::chrono::duration<double> >(cu_t2 - cu_t1).count();
 
-        std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
-        std::cout << std::endl;
+    std::cout << "Time elapsed to get the result: " << cu_totalTime << " seconds" << std::endl;
+    std::cout << std::endl;
 
     #endif
 
