@@ -8,6 +8,10 @@ cmake -Bbuild -H. -DMODEL=omp -DCMAKE_CXX_COMPILER=g++ -DOFFLOAD=NVIDIA:sm_75 \
 
 cmake --build build
 
+export OMP_NUM_THREADS=32
+export OMP_PROC_BIND=spread
+export OMP_PLACES=threads
+
 echo ""
 echo "-------------------------------------"
 echo "Executing the Pi Kernel benchmark"
