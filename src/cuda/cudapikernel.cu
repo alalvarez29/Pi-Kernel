@@ -24,6 +24,7 @@ __global__ void integrate(double *globalSum, long stepNum, double stepLength, in
     memset(blockSum, 0, threadNum * sizeof(double));
 
     double x;
+
     for(long i = start; i < end; i++)
     {
         x = (i + 0.5) * stepLength;
@@ -99,11 +100,9 @@ int main()
     double *deviceBlockSum;
     double *devicePi;
 
-    //allocate memory on GPU (device)
     cudaMalloc((void **) &devicePi, sizeof(double));
     cudaMalloc((void **) &deviceBlockSum, sizeof(double) * BLOCK_NUM);
 
-    //timer 
     cudaEvent_t startTime, stopTime;
     cudaEventCreate(&startTime);
     cudaEventCreate(&stopTime);
@@ -111,7 +110,7 @@ int main()
     std::cout << "Approximate pi using a Riemann sum" << std::endl;
     std::cout << std::endl;
 
-    std::cout << "Running CUDA pi approximation" << std::endl;
+    std::cout << "Running CUDA pi approximation..." << std::endl;
 
     for(int repeat = 0; repeat < NREPEAT; repeat++)
     {
@@ -120,7 +119,6 @@ int main()
 
         if(repeat == (NREPEAT - 1))
         {
-            //get result to host from device
             cudaMemcpy(&pi, devicePi, sizeof(double), cudaMemcpyDeviceToHost);
 
             std::cout << "\tpi = " << std::setprecision(16) << pi << std::endl;
@@ -132,10 +130,9 @@ int main()
     float gpuTime = 0;
     cudaEventElapsedTime(&gpuTime, startTime, stopTime);
 
-	std::cout << "Time elapsed to get the result: " << gpuTime / 1000 << " seconds" << std::endl;
-	std::cout << std::endl;
+    std::cout << "Time elapsed to get the result: " << gpuTime / 1000 << " seconds" << std::endl;
+    std::cout << std::endl;
 
-    //free memory
     cudaFree(deviceBlockSum);
 
     cudaDeviceReset();
