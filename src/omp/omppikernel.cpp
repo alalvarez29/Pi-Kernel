@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
     const long N = pow(2,36);
     const double dx = 1.0 / double(N);
     const int nrepeat = 100;
+    const int prec = 16;
 
     double totalTime, x;
 
