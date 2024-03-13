@@ -4,8 +4,8 @@ echo "Building the Pi Kernel benchmark"
 
 cd ..
 
-cmake -Bbuild -H. -DMODEL=cuda -DCMAKE_CXX_COMPILER=g++ \
--DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.3/bin/nvcc -DCUDA_ARCH=sm_80
+cmake -Bbuild -H. -DMODEL=kokkos -DKOKKOS_IN_TREE=/home/cc/kokkos -DKokkos_ENABLE_CUDA=ON -DCMAKE_CXX_COMPILER=g++ \
+-DKokkos_CUDA_DIR=/usr/local/cuda-12.3 -DKokkos_ARCH_AMPERE80=ON
 
 cmake --build build
 
@@ -21,9 +21,9 @@ echo ""
 
 for i in {0..9..1}
 do
-        ./build/cuda-pikernel
+        ./build/kokkos-pikernel
 done
-echo "CUDA Script Pi Kernel executed"
+echo "Kokkos Script Pi Kernel executed"
 
 rm -rf build
 
