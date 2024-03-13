@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     {
         double omp_pi = 0.0;
 
-        #pragma omp parallel for reduction(+:omp_pi) private(x)
+        #pragma omp parallel for simd private(x) reduction(+:omp_pi)
         for(long i = 0; i < N; i++)
         {
             x = (double(i) + 0.5) * dx;

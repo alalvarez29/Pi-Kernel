@@ -5,7 +5,7 @@
 set(OMP_FLAGS_OFFLOAD_INTEL
         -qnextgen -fiopenmp -fopenmp-targets=spir64)
 set(OMP_FLAGS_OFFLOAD_GNU_NVIDIA
-        -foffload=nvptx-none)
+        -fopenmp -foffload=nvptx-none -fno-stack-protector -fcf-protection=none)
 set(OMP_FLAGS_OFFLOAD_GNU_AMD
         -foffload=amdgcn-amdhsa)
 set(OMP_FLAGS_OFFLOAD_CLANG_NVIDIA

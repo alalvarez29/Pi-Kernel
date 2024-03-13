@@ -4,11 +4,11 @@ echo "Building the Pi Kernel benchmark"
 
 cd ..
 
-cmake -Bbuild -H. -DMODEL=omp -DCMAKE_CXX_COMPILER=g++ -DOFFLOAD=NVIDIA:sm_80 \
+sudo cmake -Bbuild -H. -DMODEL=omp -DCMAKE_CXX_COMPILER=g++ -DOFFLOAD=NVIDIA:sm_80 \
 
-cmake --build build
+sudo cmake --build build
 
-export OMP_NUM_THREADS=32
+export OMP_NUM_THREADS=48
 export OMP_PROC_BIND=spread
 export OMP_PLACES=threads
 
@@ -28,6 +28,6 @@ do
 done
 echo "OpenMP Script Pi Kernel executed"
 
-rm -rf build
+sudo rm -rf build
 
 exit
